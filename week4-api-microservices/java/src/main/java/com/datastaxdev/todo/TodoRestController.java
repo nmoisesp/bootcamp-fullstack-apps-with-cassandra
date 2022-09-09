@@ -12,6 +12,9 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.util.List;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +50,20 @@ public class TodoRestController {
     public Stream<Todo> findAllByUser(HttpServletRequest req, 
             @PathVariable(value = "user") String user) {
         return repo.findByKeyUserId(user).stream()
+                   .map(TodoRestController::mapAsTodo)
+                   .map(t -> t.setUrl(req));
+    }
+
+    @GetMapping("/{user}/todos/status/{status}")
+    public Stream<Todo> findAllByStatus(HttpServletRequest req, 
+            @PathVariable(value = "user") String user, @PathVariable(value = "status") Boolean status) {
+        
+        List<TodoItem> todoItems = repo.findByKeyUserId(user);
+        List<TodoItem> todoItemsFiltered = todoItems.stream()
+                                            .sorted(Comparator.comparing(x -> x.isCompleted()))
+                                            .collect(Collectors.toList());
+
+        return todoItemsFiltered.stream()
                    .map(TodoRestController::mapAsTodo)
                    .map(t -> t.setUrl(req));
     }

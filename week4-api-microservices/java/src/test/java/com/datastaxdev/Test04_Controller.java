@@ -29,12 +29,17 @@ public class Test04_Controller {
              createURLWithPort("/api/v1/john/todos/"), HttpMethod.GET, entity, Todo[].class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
+    @Test
+    public void should_retrieve_todolist_completed_v1() {
+        HttpHeaders        headers = new HttpHeaders();
+        HttpEntity<String> entity  = new HttpEntity<String>(null, headers);
+        ResponseEntity<Todo[]> response = restTemplate.exchange(
+             createURLWithPort("/api/v1/john/todos/status/true"), HttpMethod.GET, entity, Todo[].class);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
     
     private String createURLWithPort(String uri) {
         return "http://localhost:" + port + uri;
     }
-    
-    
-
 }
-
